@@ -1,0 +1,11 @@
+<library path="libwirispro_manager_panel">
+
+<class name="wirispro_manager_panel/WirisProManager"
+       type="wirispro_manager_panel::WirisProRvizPanel"
+       base_class_type="rviz::Panel">
+  <description>
+    This tool lets you handle the Workswell Wiris Pro Ethernet SDK.
+  </description>
+</class>
+
+</library>
