@@ -108,18 +108,27 @@ class WirisProManagerWidget : public QWidget
     /**
      * @brief Q_SLOT that handles actions for when
      * the capture button has been clicked.
+     * 
+     * @param checked Bool set to true if the button was
+     *       pressed, and false if it was released.
      */
     void handleCaptureClicked(const bool checked);
 
     /**
      * @brief Q_SLOT that handles actions for when
      * the check box for ETH stream has been clicked.
+     * 
+     * @param state Int that represents the state of the
+     *       check box.
     */
     void handleEthChecked(int state);
 
     /**
      * @brief Q_SLOT that handles actions for when
      * the ZoomSlider (QSlider) has been moved. 
+     * 
+     * @param value Int that represents the value of the
+     *      QSlider.
     */
     void handleZoomSliderMoved(int value);
     
@@ -128,6 +137,9 @@ class WirisProManagerWidget : public QWidget
     /**
      * @brief Q_SLOT that handles actions for when
      * the combo box for the gimbal control mode has been modified.
+     * 
+     * @param index Int that represents the index of the
+     *     combo box.
      * 
     */
     void handleGimbalModeChanged(int index);
@@ -138,7 +150,7 @@ class WirisProManagerWidget : public QWidget
      * control has been clicked in the apply button.
      * 
     */
-    void handleGimbalAngleControlApply(void);
+    void handleGimbalAngleControlApply(void); 
 
     /**
      * @brief Q_SLOT that handles actions for when

@@ -29,6 +29,9 @@
 
 ## Overview
 
+<img src="./docs/wirisPro.png" width="150" height="100" />
+<img src="./docs/worskswell.png" width="150" height="30" />
+
 This package provides a custom RViz panel for managing the Workswell Wiris Pro camera in the context of SIMAR project. The panel allows users to make a simple use of the camera features, such as start/stop recording video, capture images, enable the ethernet video Stream, Zoom Adjustement, etc; using as a driver package in ROS as a backend. 
 
 
@@ -96,6 +99,8 @@ Define more steps to follow
 * Found a bug? Create an ISSUE!
 
 * Do you want to contribute? Create a PULL-REQUEST!
+
+<img src="./docs/logo_grvc.png" width="100" height="100" />
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
