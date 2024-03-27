@@ -15,6 +15,32 @@ namespace wirispro_manager_panel {
 WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent), _ui(std::make_unique<Ui::WirisProManagerWidget>()),_nh("~")
 {
     _ui->setupUi(this);
+    // /// THREADS Declaration
+    // // At first we declare the QObjects for capture and convert
+    QStreamer streamer;
+    // Capture capture;
+    // Converter converter;
+
+    // // We need to specify that the QLabel which will contain the image is _ui->stream_label
+    streamer.setLabel(_ui->stream_label);
+
+    // // We need a Capture and Convert threads, type Thread  
+    // Thread captureThread, converterThread;
+
+    // converter.setProcessAll(false);
+    // captureThread.start();
+    // converterThread.start();
+
+    // capture.moveToThread(&captureThread);
+    // converter.moveToThread(&converterThread);
+    // connect(&capture, &Capture::frameReady, &converter, &Converter::processFrame);
+    // connect(&converter, &Converter::imageReady, &streamer, &QStreamer::setImage);
+    // connect(&capture, &Capture::started, [](){ qDebug() << "Capture started."; });
+    // QMetaObject::invokeMethod(&capture, "start");
+
+    
+
+    /// ROS STUFF
     // ros clients initialization, TBD: take a look into the relative/absolute path of the service
     _start_recording_client = _nh.serviceClient<std_srvs::Trigger>("/recording_start");
     _stop_recording_client = _nh.serviceClient<std_srvs::Trigger>("/recording_stop");
@@ -23,28 +49,26 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
 
     // TBD: include gimbal subscribers
 
-    // for debugging purposes, we set the angles to 10, 20, 30
+    // DEBUGGING, we set the angles to 10, 20, 30
     _ui->lcdNumber_pitch->display(10);
     _ui->lcdNumber_roll->display(20);
     _ui->lcdNumber_yaw->display(30);
     // make the stream_label (QLabel) invisible
-    _ui->stream_label->setVisible(false);
+    //_ui->stream_label->setVisible(false);
 
-    // Image testing
-    QImage image;
-    // we pick the icon from relative path: ../docs/worskswell.png
-    bool loaded = image.load("../docs/workswell.png");
+    
     
 
     connectSignals();
 
+    /// BUTTONS RELATED
     QIcon::setThemeName("Yaru");
     _ui->start_button->setIcon(QIcon::fromTheme("media-playback-start"));
     _ui->stop_button->setIcon(QIcon::fromTheme("media-playback-stop"));
     //_ui->capture_button->setIcon(QIcon::fromTheme("camera-photo"));
     //_ui->eth_checkBox->setIcon(QIcon::fromTheme("media-seek-backward"));
     
-    // Button connections from the ui generated file with Qt Designer
+     // Button connections from the ui generated file with Qt Designer
     connect(_ui->start_button, &QPushButton::clicked, this, &WirisProManagerWidget::handleStartClicked);
     connect(_ui->stop_button, &QPushButton::clicked, this, &WirisProManagerWidget::handleStopRClicked);
     connect(_ui->capture_button, &QPushButton::clicked, this, &WirisProManagerWidget::handleCaptureClicked);
@@ -76,12 +100,7 @@ WirisProManagerWidget::~WirisProManagerWidget()
 // Function to connect all the necessary signals and slots between this class and the QBagPlayer class.
 void WirisProManagerWidget::connectSignals(void)
 {   
-    //TBD: Make the proper connections between the signals and slots
-
-
-    // connect(this, &WirisProManagerWidget::sendStartRecording, this, &WirisProManagerWidget::startRecording);
-    // connect(this, &WirisProManagerWidget::sendStopRecording, this, &WirisProManagerWidget::stopRecording);
-    // connect(this, &WirisProManagerWidget::sendCaptureImg, this, &WirisProManagerWidget::captureImg);
+   // TBD: connect the signals and slots between the QStreamer and the Capture and Converter classes    
 
 }
 
@@ -252,7 +271,21 @@ void WirisProManagerWidget::handleGimbalAnglesTracker(void){
 
 
 }
-
+// Testing purposes
+QImage WirisProManagerWidget::convertOpenCVMatToQtQImage(cv::Mat mat)
+{
+    if(mat.channels() == 1) { // if 1 channel (grayscale or black and white) image
+        return QImage((uchar*)mat.data, mat.cols, mat.rows, mat.step, QImage::Format_Indexed8);// return QImage
+    }
+    else if(mat.channels() == 3) { // if 3 channel color image
+        cv::cvtColor(mat, mat, cv::COLOR_BGR2RGB);// flip colors
+        return QImage((uchar*)mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);// return QImage
+    }
+    else {
+        qDebug() << "in convertOpenCVMatToQtQImage, image was not 1 channel or 3 channel, should never get here";
+    }
+    return QImage();// return a blank QImage if the above did not work
+}
 
 // TBD: Implement temperature display
 }  // namespace wirispro_manager_panel

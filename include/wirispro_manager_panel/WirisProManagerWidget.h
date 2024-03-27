@@ -7,14 +7,18 @@
 #include <QImage>
 #include <ros/ros.h>
 
-//#include "QBagPlayer.h"
-//#include "QCustomProgressBar.h"
+// We need the QStreamer class to be able to use it in this class
+#include "QStreamer.h"
+
+
 
 namespace Ui {
 class WirisProManagerWidget;
 }
 
 namespace wirispro_manager_panel {
+
+class Thread final : public QThread { public: ~Thread() { quit(); wait(); } };
 
 /**
  * @brief WirisProManagerWidget.
@@ -63,7 +67,7 @@ class WirisProManagerWidget : public QWidget
     /**
      * @brief Function to connect all the necessary
      * signals and slots between this class and
-     * the QBagPlayer class.
+     * the QStreamer class.
      */
     void connectSignals(void);
 
@@ -177,6 +181,9 @@ class WirisProManagerWidget : public QWidget
     ros::ServiceClient _stop_recording_client;
     ros::ServiceClient _capture_client;
     ros::ServiceClient _eth_stream_client;
+
+    // Testing image streaming
+    QImage convertOpenCVMatToQtQImage(cv::Mat mat);
 
 };
 } // namespace wirispro_manager_panel
