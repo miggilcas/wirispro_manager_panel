@@ -11,7 +11,7 @@ QStreamer::QStreamer(QObject *parent) : QObject(parent) {
     // Showing a video in a QLabel
     cv::VideoCapture cap("/home/user/cat.gif");
     if(!cap.isOpened()){
-        QMessageBox::information(this, "", "error: Video not loaded "); // show error message
+        //QMessageBox::information(this, "", "error: Video not loaded "); // show error message
         *_stream = false;
     }
     ROS_INFO("Video loaded successfully");
@@ -32,7 +32,7 @@ QStreamer::QStreamer(QObject *parent) : QObject(parent) {
         }
         memcpy(data, cvframe.data, cvframe.rows * cvframe.step);
         Qframe = QImage(data, cvframe.cols, cvframe.rows, cvframe.step, QImage::Format_RGB888).copy();
-        _ui->stream_label->setPixmap(QPixmap::fromImage(Qframe));
+        //_ui->stream_label->setPixmap(QPixmap::fromImage(Qframe));
         //_ui->stream_label->setScaledContents(true);
 
 
