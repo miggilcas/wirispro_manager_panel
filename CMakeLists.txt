@@ -64,10 +64,11 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rviz
   wirispro_manager
+  cv_bridge
 )
 
 
-
+find_package(OpenCV)
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -93,6 +94,7 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 #######################
 ## Configuring Qt5   ##
@@ -117,7 +119,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${catkin_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${catkin_LIBRARIES} Qt5::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${catkin_LIBRARIES} Qt5::Widgets  ${OpenCV_LIBRARIES})
 target_compile_options(${PROJECT_NAME} PUBLIC "-Wno-register") # Avoid OGRE deprecaton warnings under C++17
 
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
@@ -158,3 +160,10 @@ message(STATUS "-------------------------- Dependencies ------------------------
 message(STATUS)
 message(STATUS "Change a value with: cmake -D<Variable>=<Value>")
 message(STATUS)
+
+message(STATUS "--------------------------    OpenCV    --------------------------")
+
+message(STATUS "OpenCV library status:")
+message(STATUS "    version: ${OpenCV_VERSION}")
+message(STATUS "    libraries: ${OpenCV_LIBRARIES}")
+message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
