@@ -67,7 +67,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
 )
 
-
+# Find OpenCV version 4.2
 find_package(OpenCV)
 ###################################
 ## catkin specific configuration ##

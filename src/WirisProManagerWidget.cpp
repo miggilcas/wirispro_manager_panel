@@ -21,7 +21,7 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
     _capture_client = _nh.serviceClient<std_srvs::Trigger>("/capture");
     _eth_stream_client = _nh.serviceClient<wirispro_manager::CameraEthStreamService>("/set_eth_stream");
 
-    // TBD: include gimbal subscribers
+    // TBD: include gimbal subscribers or services
 
     // for debugging purposes, we set the angles to 10, 20, 30
     _ui->lcdNumber_pitch->display(10);
@@ -30,10 +30,48 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
     // make the stream_label (QLabel) invisible
     _ui->stream_label->setVisible(false);
 
-    // Image testing
-    QImage image;
-    // we pick the icon from relative path: ../docs/worskswell.png
-    bool loaded = image.load("../docs/workswell.png");
+    //------------------ Image testing -----------------------------------------------------
+    // QString filename = "/home/user/simar_ws/src/wirispro_manager_panel/docs/logo_grvc.png";
+    
+    // /** set content to show center in label */
+    // _ui->stream_label->setAlignment(Qt::AlignCenter);
+    // QPixmap pix;
+
+    // /** to check wether load ok */
+    // if(pix.load(filename)){
+    //     /** scale pixmap to fit in label'size and keep ratio of pixmap */
+    //     pix = pix.scaled(_ui->stream_label->size(),Qt::KeepAspectRatio);
+    //     _ui->stream_label->setPixmap(pix);
+    // }
+    // Trying to print some video file features to make sure opencv can be used
+    // cv::VideoCapture cap("/home/user/meme.mp4");
+    // if(!cap.isOpened()){
+    //     ROS_ERROR("Error opening video file");
+    // }
+    // else{
+    //     ROS_WARN("Video file opened");
+    //     ROS_INFO("Frame width: %d", cap.get(cv::CAP_PROP_FRAME_WIDTH));
+    //     ROS_INFO("Frame height: %d", cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    //     ROS_INFO("Frame count: %d", cap.get(cv::CAP_PROP_FRAME_COUNT));
+    //     ROS_INFO("Frame rate: %f", cap.get(cv::CAP_PROP_FPS));
+    // }
+    //------------------ It works      -----------------------------------------------------
+    
+    // Visible thread management
+    // remember that the constructor of the VisibleThread class is: VisibleThread(bool* stream, const QString & ssrc, QLabel *label)
+    _visible_stream = std::make_unique<VisibleThread>(new bool(true), "10.42.0.230", _ui->stream_label);
+    _visible_stream_thread = std::make_unique<QThread>(this);
+
+    // Move the thread to the QThread
+    _visible_stream->moveToThread(_visible_stream_thread.get());
+    // Make a connection to the finished signal of the thread
+    connect(_visible_stream_thread.get(), &QThread::finished, _visible_stream.get(), &QObject::deleteLater, Qt::QueuedConnection);
+    // Connect the signal to the slot
+    connect(this, &WirisProManagerWidget::sendStartStream, _visible_stream.get(), &VisibleThread::receiveStartStreaming);
+    // Start the thread
+    _visible_stream_thread->start();
+
+    
     
 
     connectSignals();
@@ -171,6 +209,8 @@ void WirisProManagerWidget::handleEthChecked(int state){
         
         // make the qLabel visible
         _ui->stream_label->setVisible(true);
+        // Emit the signal to start the stream
+        Q_EMIT sendStartStream();
     }
     else{
         srv.request.enable = "FALSE";
@@ -184,6 +224,9 @@ void WirisProManagerWidget::handleEthChecked(int state){
         }
         // make the qLabel invisible
         _ui->stream_label->setVisible(false);
+        // TBD: Implement a way to destruct the thread when the checkbox is unchecked
+        // Emit the signal to stop the stream
+        //Q_EMIT sendStopStream();
 
     }
     

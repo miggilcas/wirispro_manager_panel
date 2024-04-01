@@ -6,8 +6,13 @@
 #include <QPixmap>
 #include <QImage>
 #include <ros/ros.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/videoio.hpp>
 
-//#include "QBagPlayer.h"
+#include "visiblethread.h"
 //#include "QCustomProgressBar.h"
 
 namespace Ui {
@@ -182,6 +187,10 @@ class WirisProManagerWidget : public QWidget
     ros::ServiceClient _stop_recording_client;
     ros::ServiceClient _capture_client;
     ros::ServiceClient _eth_stream_client;
+
+    // Thread management
+    std::unique_ptr<VisibleThread>         _visible_stream;
+    std::unique_ptr<QThread>            _visible_stream_thread;
 
 };
 } // namespace wirispro_manager_panel

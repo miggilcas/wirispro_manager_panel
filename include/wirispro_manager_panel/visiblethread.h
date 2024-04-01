@@ -6,7 +6,10 @@
 #include <QString>
 #include <QImage>
 #include <QMutex>
+#include <QLabel>
+#include <QtGlobal>
 
+#include <ros/ros.h>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
@@ -15,6 +18,7 @@
 #include <memory>
 #include "streamthread.h"
 
+
 namespace wirispro_manager_panel {
 
 class VisibleThread: public StreamThread
@@ -22,7 +26,7 @@ class VisibleThread: public StreamThread
     Q_OBJECT
 
     public:
-        VisibleThread(bool* stream, const QString & ssrc) :  StreamThread (stream, ssrc)
+        VisibleThread(bool* stream, const QString & ssrc, QLabel* label) : StreamThread(stream, ssrc), _label(label) 
         {}
     public Q_SLOTS:
 
@@ -36,6 +40,9 @@ class VisibleThread: public StreamThread
 
         QImage streamFrameVisible;
         std::shared_ptr<QMutex> visibleMutex;
+        std::thread _visible_thread;
+        // defining the label to show the video, it will be passed as a parameter as _ui->stream_label
+        QLabel* _label;
 
 };
 } // namespace wirispro_manager_panel
