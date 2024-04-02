@@ -65,6 +65,7 @@ find_package(catkin REQUIRED COMPONENTS
   rviz
   wirispro_manager
   cv_bridge
+  gremsy_base
 )
 
 # Find OpenCV version 4.2
@@ -81,7 +82,7 @@ find_package(OpenCV)
 catkin_package(
    INCLUDE_DIRS   include
    LIBRARIES      ${PROJECT_NAME}
-   CATKIN_DEPENDS roscpp pluginlib rviz rosbag wirispro_manager
+   CATKIN_DEPENDS roscpp pluginlib rviz rosbag wirispro_manager gremsy_base
    DEPENDS        
 )
 

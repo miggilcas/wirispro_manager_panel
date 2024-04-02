@@ -8,10 +8,10 @@
 
 #include "ui_WirisProManagerWidget.h"
 #include "wirispro_manager/CameraEthStreamService.h"
-#include "gremsy_base/GimbalPose.h"  
+#include "gremsy_base/GimbalPos.h"  
 #include "gremsy_base/GimbalMode.h"
 #include "geometry_msgs/Vector3.h"
-#include <std_msgs/Bool.h
+#include <std_msgs/Bool.h>
 
 namespace wirispro_manager_panel {
 // Constructor
@@ -26,7 +26,7 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
 
 
     // TBD: include gimbal subscribers or services
-    _set_gimbal_goal_client = _nh.serviceClient<gremsy_base::GimbalPose>("/ros_gremsy/goal");
+    _set_gimbal_goal_client = _nh.serviceClient<gremsy_base::GimbalPos>("/ros_gremsy/goal");
     _set_gimbal_mode_client = _nh.serviceClient<gremsy_base::GimbalMode>("/ros_gremsy/mode");
     _gimbal_angles_sub = _nh.subscribe("/ros_gremsy/angle", 10, &WirisProManagerWidget::gimbalAnglesCB, this);
 
@@ -255,7 +255,7 @@ void WirisProManagerWidget::handleZoomSliderMoved(int value){
 void WirisProManagerWidget::handleGimbalModeChanged(int index){
     // TBD: implement the service call to change the gimbal mode
     gremsy_base::GimbalMode srv;
-    srv.request.mode.data = index;
+    srv.request.mode = index;
     // Debugging:
     switch (index)
     {
@@ -274,7 +274,7 @@ void WirisProManagerWidget::handleGimbalModeChanged(int index){
         ROS_INFO("Mode changed successfuly");
     }
     else{
-        ROS_ERROR("Failed to call gimbal mode service")
+        ROS_ERROR("Failed to call gimbal mode service");
     }
 
 
@@ -282,7 +282,7 @@ void WirisProManagerWidget::handleGimbalModeChanged(int index){
 
 void WirisProManagerWidget::handleGimbalAngleControlApply(void){
     
-    gremsy_base::GimbalPose srv;
+    gremsy_base::GimbalPos srv;
     // Debugging: print the apply button clicked
     ROS_INFO("Apply button clicked");
     srv.request.pos.x =_ui->doubleSpinBox_roll->value();
@@ -314,17 +314,15 @@ void WirisProManagerWidget::gimbalAnglesCB(const geometry_msgs::Vector3::ConstPt
     // TBD: implement the service call to visualize the gimbal angles
     
     // Debugging: Manual display of the angles in the QLcdNumbers
-    _ui->lcdNumber_pitch->display(msg.data.x);
-    _ui->lcdNumber_roll->display(msg.y);
-    _ui->lcdNumber_yaw->display(msg.z);
+    _ui->lcdNumber_pitch->display(msg->x);
+    _ui->lcdNumber_roll->display(msg->y);
+    _ui->lcdNumber_yaw->display(msg->z);
 
     
 
 
 }
 
-// Callbacks
-void WirisProManager
 
 // TBD: Implement temperature display
 }  // namespace wirispro_manager_panel
