@@ -11,6 +11,8 @@
 #include "gremsy_base/GimbalPos.h"  
 #include "gremsy_base/GimbalMode.h"
 #include "geometry_msgs/Vector3.h"
+#include "geometry_msgs/Vector3Stamped.h"
+
 #include <std_msgs/Bool.h>
 
 namespace wirispro_manager_panel {
@@ -310,7 +312,7 @@ void WirisProManagerWidget::handleGimbalAngleControlReset(void){
     _ui->doubleSpinBox_yaw->setValue(0);
 
 }
-void WirisProManagerWidget::gimbalAnglesCB(const geometry_msgs::Vector3::ConstPtr& msg){
+void WirisProManagerWidget::gimbalAnglesCB(const geometry_msgs::Vector3Stamped::ConstPtr& msg){
     // TBD: implement the service call to visualize the gimbal angles
     
     // Debugging: Manual display of the angles in the QLcdNumbers
