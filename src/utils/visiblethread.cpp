@@ -19,8 +19,18 @@ void VisibleThread::receiveStartStreaming(void)
     ROS_INFO("StartStreaming signal received");
     if (!thread_running) {
         _visible_thread = std::thread(&VisibleThread::run, this);
+        *_stream = true;
     } else
         ROS_WARN("VisibleThread is already running!");
+}
+
+void VisibleThread::receiveStopStreaming(void)
+{
+    ROS_INFO("StopStreaming signal received");
+    *_stream = false;
+    _visible_thread.join();
+    ROS_INFO("VisibleThread stopped");
+
 }
 
 void VisibleThread::run()
@@ -46,8 +56,7 @@ void VisibleThread::run()
             ROS_ERROR("Empty frame");
             break;
         }
-        //cv::Mat frame2 = cv::Mat::ones(frame.size(), CV_8UC1);
-        //std::cout << frame.at<cv::Vec3b>(0, 0) << std::endl;
+        
         
         // // print properties 
         // // ROS_INFO("Frame size: %d x %d", frame.cols, frame.rows);
@@ -77,7 +86,7 @@ void VisibleThread::run()
     
     cap.release();
     *_stream = false;
-    ROS_INFO("VisibleThread stopped");
+    ROS_INFO("VisibleThread stop running :(");
 
 }
 // TBD: Destructor

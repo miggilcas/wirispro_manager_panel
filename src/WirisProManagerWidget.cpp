@@ -28,21 +28,21 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
     _ui->lcdNumber_roll->display(20);
     _ui->lcdNumber_yaw->display(30);
     // make the stream_label (QLabel) invisible
-    _ui->stream_label->setVisible(false);
+    //_ui->stream_label->setVisible(false);
 
     //------------------ Image testing -----------------------------------------------------
-    // QString filename = "/home/user/simar_ws/src/wirispro_manager_panel/docs/logo_grvc.png";
+    QString filename = "/home/user/simar_ws/src/wirispro_manager_panel/docs/init.png";
     
-    // /** set content to show center in label */
-    // _ui->stream_label->setAlignment(Qt::AlignCenter);
-    // QPixmap pix;
+    /** set content to show center in label */
+    _ui->stream_label->setAlignment(Qt::AlignCenter);
+    QPixmap pix;
 
-    // /** to check wether load ok */
-    // if(pix.load(filename)){
-    //     /** scale pixmap to fit in label'size and keep ratio of pixmap */
-    //     pix = pix.scaled(_ui->stream_label->size(),Qt::KeepAspectRatio);
-    //     _ui->stream_label->setPixmap(pix);
-    // }
+    /** to check wether load ok */
+    if(pix.load(filename)){
+        /** scale pixmap to fit in label'size and keep ratio of pixmap */
+        pix = pix.scaled(_ui->stream_label->size(),Qt::KeepAspectRatio);
+        _ui->stream_label->setPixmap(pix);
+    }
     // Trying to print some video file features to make sure opencv can be used
     // cv::VideoCapture cap("/home/user/meme.mp4");
     // if(!cap.isOpened()){
@@ -66,8 +66,9 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
     _visible_stream->moveToThread(_visible_stream_thread.get());
     // Make a connection to the finished signal of the thread
     connect(_visible_stream_thread.get(), &QThread::finished, _visible_stream.get(), &QObject::deleteLater, Qt::QueuedConnection);
-    // Connect the signal to the slot
+    // Connect the signals to the slot
     connect(this, &WirisProManagerWidget::sendStartStream, _visible_stream.get(), &VisibleThread::receiveStartStreaming);
+    connect(this, &WirisProManagerWidget::sendStopStream, _visible_stream.get(), &VisibleThread::receiveStopStreaming);
     // Start the thread
     _visible_stream_thread->start();
 
@@ -209,7 +210,9 @@ void WirisProManagerWidget::handleEthChecked(int state){
         
         // make the qLabel visible
         _ui->stream_label->setVisible(true);
-        // Emit the signal to start the stream
+        // Emit the signal to start the stream after 1 second to be sure the streaming is available
+        // wait for 1 second
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         Q_EMIT sendStartStream();
     }
     else{
@@ -226,7 +229,7 @@ void WirisProManagerWidget::handleEthChecked(int state){
         _ui->stream_label->setVisible(false);
         // TBD: Implement a way to destruct the thread when the checkbox is unchecked
         // Emit the signal to stop the stream
-        //Q_EMIT sendStopStream();
+        Q_EMIT sendStopStream();
 
     }
     

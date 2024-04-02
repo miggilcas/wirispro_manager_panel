@@ -94,6 +94,11 @@ class WirisProManagerWidget : public QWidget
     */
     void sendStartStream(void);
 
+    /**
+     * @brief Q_SIGNAL that stops the display of the stream
+    */
+    void sendStopStream(void);
+
     
 
   private Q_SLOTS:

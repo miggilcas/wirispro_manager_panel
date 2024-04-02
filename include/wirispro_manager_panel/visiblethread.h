@@ -35,6 +35,11 @@ class VisibleThread: public StreamThread
          */
         void receiveStartStreaming(void);
 
+        /**
+         * @brief Q_SLOT to stop streaming the video from the rtsp.
+         */
+        void receiveStopStreaming(void);
+
     protected:
         virtual void run() override;
 
