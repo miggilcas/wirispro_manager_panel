@@ -12,6 +12,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
 #include "geometry_msgs/Vector3.h"
+#include "geometry_msgs/Vector3Stamped.h"
 
 #include "visiblethread.h"
 //#include "QCustomProgressBar.h"
@@ -77,7 +78,7 @@ class WirisProManagerWidget : public QWidget
      * @brief Callback to manage the gimbal angles
      * subscription
     */
-    void gimbalAnglesCB(const geometry_msgs::Vector3::ConstPtr& msg);
+    void gimbalAnglesCB(const geometry_msgs::Vector3Stamped::ConstPtr& msg);
 
   Q_SIGNALS:
     // Not sure if they are necessary, but we can add them later

@@ -30,7 +30,7 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
     // TBD: include gimbal subscribers or services
     _set_gimbal_goal_client = _nh.serviceClient<gremsy_base::GimbalPos>("/ros_gremsy/goal");
     _set_gimbal_mode_client = _nh.serviceClient<gremsy_base::GimbalMode>("/ros_gremsy/mode");
-    _gimbal_angles_sub = _nh.subscribe("/ros_gremsy/angle", 10, &WirisProManagerWidget::gimbalAnglesCB, this);
+    _gimbal_angles_sub = _nh.subscribe("/ros_gremsy/angle", 10, &WirisProManagerWidget::gimbalAnglesCB,this);
 
     // for debugging purposes, we set the angles to 10, 20, 30
     // _ui->lcdNumber_pitch->display(10);
@@ -316,9 +316,9 @@ void WirisProManagerWidget::gimbalAnglesCB(const geometry_msgs::Vector3Stamped::
     // TBD: implement the service call to visualize the gimbal angles
     
     // Debugging: Manual display of the angles in the QLcdNumbers
-    _ui->lcdNumber_pitch->display(msg->x);
-    _ui->lcdNumber_roll->display(msg->y);
-    _ui->lcdNumber_yaw->display(msg->z);
+    _ui->lcdNumber_pitch->display(msg->vector.x);
+    _ui->lcdNumber_roll->display(msg->vector.y);
+    _ui->lcdNumber_yaw->display(msg->vector.z);
 
     
 
