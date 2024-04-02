@@ -8,7 +8,10 @@
 
 #include "ui_WirisProManagerWidget.h"
 #include "wirispro_manager/CameraEthStreamService.h"
-
+#include "gremsy_base/GimbalPose.h"  
+#include "gremsy_base/GimbalMode.h"
+#include "geometry_msgs/Vector3.h"
+#include <std_msgs/Bool.h
 
 namespace wirispro_manager_panel {
 // Constructor
@@ -21,12 +24,16 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
     _capture_client = _nh.serviceClient<std_srvs::Trigger>("/capture");
     _eth_stream_client = _nh.serviceClient<wirispro_manager::CameraEthStreamService>("/set_eth_stream");
 
+
     // TBD: include gimbal subscribers or services
+    _set_gimbal_goal_client = _nh.serviceClient<gremsy_base::GimbalPose>("/ros_gremsy/goal");
+    _set_gimbal_mode_client = _nh.serviceClient<gremsy_base::GimbalMode>("/ros_gremsy/mode");
+    _gimbal_angles_sub = _nh.subscribe("/ros_gremsy/angle", 10, &WirisProManagerWidget::gimbalAnglesCB, this);
 
     // for debugging purposes, we set the angles to 10, 20, 30
-    _ui->lcdNumber_pitch->display(10);
-    _ui->lcdNumber_roll->display(20);
-    _ui->lcdNumber_yaw->display(30);
+    // _ui->lcdNumber_pitch->display(10);
+    // _ui->lcdNumber_roll->display(20);
+    // _ui->lcdNumber_yaw->display(30);
     // make the stream_label (QLabel) invisible
     //_ui->stream_label->setVisible(false);
 
@@ -247,32 +254,49 @@ void WirisProManagerWidget::handleZoomSliderMoved(int value){
 
 void WirisProManagerWidget::handleGimbalModeChanged(int index){
     // TBD: implement the service call to change the gimbal mode
-   
+    gremsy_base::GimbalMode srv;
+    srv.request.mode.data = index;
     // Debugging:
     switch (index)
     {
     case 0:
         ROS_INFO("Gimbal mode changed to LOCKED");
+        
         break;
 
     case 1:
         ROS_INFO("Gimbal mode changed to FOLLOW");
+        
         break;
     }
     
+    if(_set_gimbal_goal_client.call(srv)){
+        ROS_INFO("Mode changed successfuly");
+    }
+    else{
+        ROS_ERROR("Failed to call gimbal mode service")
+    }
 
 
 }
 
 void WirisProManagerWidget::handleGimbalAngleControlApply(void){
-    // TBD: implement the service call to change the gimbal angles
     
+    gremsy_base::GimbalPose srv;
     // Debugging: print the apply button clicked
     ROS_INFO("Apply button clicked");
+    srv.request.pos.x =_ui->doubleSpinBox_roll->value();
+    srv.request.pos.y =_ui->doubleSpinBox_pitch->value();
+    srv.request.pos.z =_ui->doubleSpinBox_yaw->value();
+    //Calling the service
+    if(_set_gimbal_goal_client.call(srv)){
+        // Showing the values from the QDoubleSpinBoxes
+        ROS_INFO(" Angles selected: %f, %f, %f", _ui->doubleSpinBox_roll->value(), _ui->doubleSpinBox_pitch->value(), _ui->doubleSpinBox_yaw->value());
+        
+    }else{
+        ROS_ERROR("Failed to call gimbal goal service");
 
-    // Showing the values from the QDoubleSpinBoxes
-    ROS_INFO(" Angles selected: %f, %f, %f", _ui->doubleSpinBox_roll->value(), _ui->doubleSpinBox_pitch->value(), _ui->doubleSpinBox_yaw->value());
-
+    }
     
 }
 void WirisProManagerWidget::handleGimbalAngleControlReset(void){
@@ -286,19 +310,21 @@ void WirisProManagerWidget::handleGimbalAngleControlReset(void){
     _ui->doubleSpinBox_yaw->setValue(0);
 
 }
-void WirisProManagerWidget::handleGimbalAnglesTracker(void){
+void WirisProManagerWidget::gimbalAnglesCB(const geometry_msgs::Vector3::ConstPtr& msg){
     // TBD: implement the service call to visualize the gimbal angles
     
     // Debugging: Manual display of the angles in the QLcdNumbers
-    _ui->lcdNumber_pitch->display(10);
-    _ui->lcdNumber_roll->display(20);
-    _ui->lcdNumber_yaw->display(30);
+    _ui->lcdNumber_pitch->display(msg.data.x);
+    _ui->lcdNumber_roll->display(msg.y);
+    _ui->lcdNumber_yaw->display(msg.z);
 
     
 
 
 }
 
+// Callbacks
+void WirisProManager
 
 // TBD: Implement temperature display
 }  // namespace wirispro_manager_panel

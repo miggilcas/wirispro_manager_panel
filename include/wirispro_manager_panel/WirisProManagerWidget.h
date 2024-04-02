@@ -11,6 +11,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
+#include "geometry_msgs/Vector3.h"
 
 #include "visiblethread.h"
 //#include "QCustomProgressBar.h"
@@ -71,6 +72,12 @@ class WirisProManagerWidget : public QWidget
      * the QBagPlayer class.
      */
     void connectSignals(void);
+
+    /**
+     * @brief Callback to manage the gimbal angles
+     * subscription
+    */
+    void gimbalAnglesCB(const geometry_msgs::Vector3::ConstPtr& msg);
 
   Q_SIGNALS:
     // Not sure if they are necessary, but we can add them later
@@ -174,11 +181,7 @@ class WirisProManagerWidget : public QWidget
     */
     void handleGimbalAngleControlReset(void);
 
-    /**
-     * @brief Q_SLOT that helps to visualize the gimbal angles
-     * 
-    */    
-    void handleGimbalAnglesTracker(void);
+    
     
 
   private:
@@ -193,6 +196,9 @@ class WirisProManagerWidget : public QWidget
     ros::ServiceClient _capture_client;
     ros::ServiceClient _eth_stream_client;
 
+    ros::ServiceClient _set_gimbal_goal_client;
+    ros::ServiceClient _set_gimbal_mode_client;
+    ros::Subscriber _gimbal_angles_sub;
     // Thread management
     std::unique_ptr<VisibleThread>         _visible_stream;
     std::unique_ptr<QThread>            _visible_stream_thread;
