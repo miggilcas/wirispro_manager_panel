@@ -270,7 +270,7 @@ void WirisProManagerWidget::handleGimbalModeChanged(int index){
         break;
     }
     
-    if(_set_gimbal_goal_client.call(srv)){
+    if(_set_gimbal_mode_client.call(srv)){
         ROS_INFO("Mode changed successfuly");
     }
     else{
