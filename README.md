@@ -1,4 +1,29 @@
-# Wiris Pro Manager RViz Panel
+<a name="readme-top"></a>
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/miggilcas/wirispro_manager_panel/tree/ethGui-WIRIS">
+    <img src="docs/logo_workswell_wwp.png" alt="Logo" width="" height="64">
+  </a>
+  <a href="https://github.com/miggilcas/wirispro_manager_panel/tree/ethGui-WIRIS">
+    <img src="docs/wirisPro.png" alt="Logo" width="" height="150">
+  </a>
+
+  <h3 align="center">Wiris Pro Manager RViz Panel</h3>
+
+  <p align="center">
+    An awesome RViz panel plugin for WirisPro Camera control
+    <br />
+    <a href="https://github.com/miggilcas/wirispro_manager_panel/tree/ethGui-WIRIS"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/miggilcas/wirispro_manager_panel/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    ·
+    <a href="https://github.com/miggilcas/wirispro_manager_panel/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+  </p>
+</div>
+
 
 <!-- TABLE OF CONTENTS 
 <details>
@@ -29,20 +54,18 @@
 
 ## Overview
 
-<img src="./docs/wirisPro.png" width="150" height="100" />
-<img src="./docs/worskswell.png" width="150" height="30" />
 
 This package provides a custom RViz panel for managing the Workswell Wiris Pro camera in the context of SIMAR project. The panel allows users to make a simple use of the camera features, such as start/stop recording video, capture images, enable the ethernet video Stream, Zoom Adjustement, etc; using as a driver package in ROS as a backend. 
 
-
+<!--TBD: include a GIF of the whole thing working -->
 
 ## Features
 
 - **Video Start/Stop Controls:** Start Recording, Stop recording
 - **Zoom Adjustment:** Change the Zoom of the WirisPro Camera, from -10x to 10x.
-- **Information Display:**
-  - XX
-  - XX
+- **Gimbal Control:** Change the Gimbal mode from follow to locked or viceversa and the roll, pitch and yaw angles.
+- **Streaming activation:** Enable the Ethernet streaming in the Camera
+- **Streaming visualization:** Streaming visualization in a 640x480 resolution window, visible and thermal views can be switched
 
 ## Dependencies installation
 
@@ -58,10 +81,26 @@ sudo apt-get install build-essential cmake
 sudo apt-get install qt5-default
 ```
 
+### Build OpenCV from source  following the steps indicated in [mediamtx](https://github.com/bluenviron/mediamtx?tab=readme-ov-file#opencv) repo
+OpenCV can publish to the server through its GStreamer plugin, as a RTSP client. It must be compiled with GStreamer support, by following this procedure:
+
+```bash
+sudo apt install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-ugly gstreamer1.0-rtsp python3-dev python3-numpy
+git clone --depth=1 -b 4.2.0 https://github.com/opencv/opencv # we use this version because cv_bridge ros package in noetic use that version, if not you could face incompatibility problems
+cd opencv
+mkdir build && cd build
+cmake -D CMAKE_INSTALL_PREFIX=/usr -D WITH_GSTREAMER=ON ..
+make -j$(nproc)
+sudo make install
+```
 ### ROS (Robot Operative System)
 
 Follow up your ROS distro installation guide: [Melodic](http://wiki.ros.org/melodic/Installation/Ubuntu) or [Noetic](http://wiki.ros.org/noetic/Installation/Ubuntu)
 
+
+### ROS Gremsy Gimbal Interface
+Follow up the repository Setup instructions:
+[ROS Gremsy repo](https://github.com/alemuva2001/ros_gremsy)
 
 
 ## Usage
@@ -100,21 +139,25 @@ Define more steps to follow
 
 * Do you want to contribute? Create a PULL-REQUEST!
 
-<img src="./docs/logo_grvc.png" width="100" height="100" />
+<br />
+<div align="center">
+  <a href="https://github.com/miggilcas/wirispro_manager_panel/tree/ethGui-WIRIS">
+    <img src="docs/logo_grvc.png" alt="Logo" width="" height="100">
+  </a>
+
+  
+</div>
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
 Finally I want to thank the following packages or URLs that inspired us to create the plugin.
 
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Malven's Flexbox Cheatsheet](https://flexbox.malven.co/)
-* [Malven's Grid Cheatsheet](https://grid.malven.co/)
-* [Img Shields](https://shields.io)
-* [GitHub Pages](https://pages.github.com)
-* [Font Awesome](https://fontawesome.com)
-* [React Icons](https://react-icons.github.io/react-icons/search)
+* [Rosbag RViz Panel](https://github.com/catec/rosbag_rviz_panel)
+* [Ethernet Stream SDK GUI 1.0.0](https://github.com/SoftwareWorkswell/EthernetStreamSDKGUI)
+* [TeleopPanel Tutorial](https://docs.ros.org/en/melodic/api/rviz_plugin_tutorials/html/panel_plugin_tutorial.html)
+* [MEDIAMTX](https://github.com/bluenviron/mediamtx)
+
 
 ---
 ---

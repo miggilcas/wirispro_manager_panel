@@ -37,12 +37,7 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
     _set_gimbal_mode_client = _nh.serviceClient<gremsy_base::GimbalMode>("/ros_gremsy/mode");
     _gimbal_angles_sub = _nh.subscribe("/ros_gremsy/angle", 1000, &WirisProManagerWidget::gimbalAnglesCB,this);
 
-    //ros::spin();
-
-    // for debugging purposes, we set the angles to 10, 20, 30
-    // _ui->lcdNumber_pitch->display(10);
-    // _ui->lcdNumber_roll->display(20);
-    // _ui->lcdNumber_yaw->display(30);
+    
     // make the stream_label (QLabel) invisible
     _ui->stream_label->setVisible(false);
     _ui->thermal_label->setVisible(false);
@@ -93,7 +88,7 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
 
     /// CONNECTIONS
 
-    connectSignals();
+    connectSignals(); // TBD: check if all the connections could be done inside the function
     // Make a connection to the finished signal of the visible thread
     connect(_visible_stream_thread.get(), &QThread::finished, _visible_stream.get(), &QObject::deleteLater, Qt::QueuedConnection);
     // Connect the signals to the slot
