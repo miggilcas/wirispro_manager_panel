@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1163</width>
-    <height>958</height>
+    <width>316</width>
+    <height>1368</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,14 +16,18 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QFrame" name="frame">
+     <property name="styleSheet">
+      <string notr="true">
+background-color: rgb(255, 242, 209);</string>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QPushButton" name="start_button">
@@ -76,23 +80,16 @@
             <string>GIMBAL CONTROL</string>
            </property>
           </widget>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>60</y>
-             <width>297</width>
-             <height>171</height>
+             <width>318</width>
+             <height>269</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Mode</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="2">
              <widget class="QComboBox" name="mode_comboBox">
               <property name="editable">
@@ -113,31 +110,8 @@
               </item>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Roll</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLCDNumber" name="lcdNumber_roll"/>
-            </item>
-            <item row="1" column="2">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_roll"/>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>Pitch</string>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="1">
              <widget class="QLCDNumber" name="lcdNumber_pitch"/>
-            </item>
-            <item row="2" column="2" rowspan="2">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_pitch"/>
             </item>
             <item row="3" column="0" rowspan="2">
              <widget class="QLabel" name="label_4">
@@ -146,16 +120,46 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="1" rowspan="2">
-             <widget class="QLCDNumber" name="lcdNumber_yaw"/>
+            <item row="1" column="2">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_roll"/>
             </item>
-            <item row="4" column="2">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_yaw"/>
+            <item row="2" column="2" rowspan="2">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_pitch"/>
             </item>
             <item row="5" column="2">
              <widget class="QDialogButtonBox" name="angles_buttonBox">
               <property name="standardButtons">
                <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Mode</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_yaw"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLCDNumber" name="lcdNumber_roll"/>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Pitch</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1" rowspan="2">
+             <widget class="QLCDNumber" name="lcdNumber_yaw"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Roll</string>
               </property>
              </widget>
             </item>
@@ -191,6 +195,26 @@
          </widget>
         </item>
         <item>
+         <widget class="QComboBox" name="stream_comboBox">
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+          <property name="currentText">
+           <string>visible</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>visible</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>thermal</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="stream_label">
           <property name="minimumSize">
            <size>
@@ -204,6 +228,13 @@
             <height>720</height>
            </size>
           </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="thermal_label">
           <property name="text">
            <string/>
           </property>

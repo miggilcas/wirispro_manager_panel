@@ -20,6 +20,11 @@ namespace wirispro_manager_panel {
 WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent), _ui(std::make_unique<Ui::WirisProManagerWidget>()),_nh("~")
 {
     _ui->setupUi(this);
+    QIcon::setThemeName("Yaru");
+    _ui->start_button->setIcon(QIcon::fromTheme("media-playback-start"));
+    _ui->stop_button->setIcon(QIcon::fromTheme("media-playback-stop"));
+    _ui->capture_button->setIcon(QIcon::fromTheme("camera-photo"));
+
     // ros clients initialization, TBD: take a look into the relative/absolute path of the service
     _start_recording_client = _nh.serviceClient<std_srvs::Trigger>("/recording_start");
     _stop_recording_client = _nh.serviceClient<std_srvs::Trigger>("/recording_stop");
@@ -30,28 +35,31 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
     // TBD: include gimbal subscribers or services
     _set_gimbal_goal_client = _nh.serviceClient<gremsy_base::GimbalPos>("/ros_gremsy/goal");
     _set_gimbal_mode_client = _nh.serviceClient<gremsy_base::GimbalMode>("/ros_gremsy/mode");
-    _gimbal_angles_sub = _nh.subscribe("/ros_gremsy/angle", 10, &WirisProManagerWidget::gimbalAnglesCB,this);
+    _gimbal_angles_sub = _nh.subscribe("/ros_gremsy/angle", 1000, &WirisProManagerWidget::gimbalAnglesCB,this);
+
+    //ros::spin();
 
     // for debugging purposes, we set the angles to 10, 20, 30
     // _ui->lcdNumber_pitch->display(10);
     // _ui->lcdNumber_roll->display(20);
     // _ui->lcdNumber_yaw->display(30);
     // make the stream_label (QLabel) invisible
-    //_ui->stream_label->setVisible(false);
+    _ui->stream_label->setVisible(false);
+    _ui->thermal_label->setVisible(false);
 
     //------------------ Image testing -----------------------------------------------------
-    QString filename = "/home/user/simar_ws/src/wirispro_manager_panel/docs/init.png";
+    // QString filename = "/home/user/simar_ws/src/wirispro_manager_panel/docs/init.png";
     
-    /** set content to show center in label */
-    _ui->stream_label->setAlignment(Qt::AlignCenter);
-    QPixmap pix;
+    // /** set content to show center in label */
+    // _ui->stream_label->setAlignment(Qt::AlignCenter);
+    // QPixmap pix;
 
-    /** to check wether load ok */
-    if(pix.load(filename)){
-        /** scale pixmap to fit in label'size and keep ratio of pixmap */
-        pix = pix.scaled(_ui->stream_label->size(),Qt::KeepAspectRatio);
-        _ui->stream_label->setPixmap(pix);
-    }
+    // /** to check wether load ok */
+    // if(pix.load(filename)){
+    //     /** scale pixmap to fit in label'size and keep ratio of pixmap */
+    //     pix = pix.scaled(_ui->stream_label->size(),Qt::KeepAspectRatio);
+    //     _ui->stream_label->setPixmap(pix);
+    // }
     // Trying to print some video file features to make sure opencv can be used
     // cv::VideoCapture cap("/home/user/meme.mp4");
     // if(!cap.isOpened()){
@@ -66,32 +74,40 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
     // }
     //------------------ It works      -----------------------------------------------------
     
-    // Visible thread management
+    /// Thread management
+
+    // Visible Thread
     // remember that the constructor of the VisibleThread class is: VisibleThread(bool* stream, const QString & ssrc, QLabel *label)
     _visible_stream = std::make_unique<VisibleThread>(new bool(true), "10.42.0.230", _ui->stream_label);
     _visible_stream_thread = std::make_unique<QThread>(this);
 
     // Move the thread to the QThread
     _visible_stream->moveToThread(_visible_stream_thread.get());
-    // Make a connection to the finished signal of the thread
+
+    // Thermal Thread
+    _thermal_stream = std::make_unique<ThermalThread>(new bool(true), "10.42.0.230", _ui->thermal_label);
+    _thermal_stream_thread = std::make_unique<QThread>(this);
+
+    // Move the thread to the QThread
+    _thermal_stream->moveToThread(_thermal_stream_thread.get());
+
+    /// CONNECTIONS
+
+    connectSignals();
+    // Make a connection to the finished signal of the visible thread
     connect(_visible_stream_thread.get(), &QThread::finished, _visible_stream.get(), &QObject::deleteLater, Qt::QueuedConnection);
     // Connect the signals to the slot
-    connect(this, &WirisProManagerWidget::sendStartStream, _visible_stream.get(), &VisibleThread::receiveStartStreaming);
+    connect(this, &WirisProManagerWidget::sendStartVisibleStream, _visible_stream.get(), &VisibleThread::receiveStartStreaming);
     connect(this, &WirisProManagerWidget::sendStopStream, _visible_stream.get(), &VisibleThread::receiveStopStreaming);
     // Start the thread
     _visible_stream_thread->start();
 
-    
-    
+    // Make a connection to the finished signal of the visible thread
+    connect(_thermal_stream_thread.get(), &QThread::finished, _thermal_stream.get(), &QObject::deleteLater, Qt::QueuedConnection);
+    // Connect the signals to the slot
+    connect(this, &WirisProManagerWidget::sendStartThermalStream, _thermal_stream.get(), &ThermalThread::receiveStartStreaming);
+    _thermal_stream_thread->start();
 
-    connectSignals();
-
-    QIcon::setThemeName("Yaru");
-    _ui->start_button->setIcon(QIcon::fromTheme("media-playback-start"));
-    _ui->stop_button->setIcon(QIcon::fromTheme("media-playback-stop"));
-    //_ui->capture_button->setIcon(QIcon::fromTheme("camera-photo"));
-    //_ui->eth_checkBox->setIcon(QIcon::fromTheme("media-seek-backward"));
-    
     // Button connections from the ui generated file with Qt Designer
     connect(_ui->start_button, &QPushButton::clicked, this, &WirisProManagerWidget::handleStartClicked);
     connect(_ui->stop_button, &QPushButton::clicked, this, &WirisProManagerWidget::handleStopRClicked);
@@ -105,6 +121,7 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget* parent) : QWidget(parent),
 
     // Combo box connections from the ui generated file with Qt Designer
     connect(_ui->mode_comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &WirisProManagerWidget::handleGimbalModeChanged);
+    connect(_ui->stream_comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &WirisProManagerWidget::handleStreamModeChanged);
     // More Gimbal control connections
     // buttonBox
     // when the apply button is clicked
@@ -127,9 +144,7 @@ void WirisProManagerWidget::connectSignals(void)
     //TBD: Make the proper connections between the signals and slots
 
 
-    // connect(this, &WirisProManagerWidget::sendStartRecording, this, &WirisProManagerWidget::startRecording);
-    // connect(this, &WirisProManagerWidget::sendStopRecording, this, &WirisProManagerWidget::stopRecording);
-    // connect(this, &WirisProManagerWidget::sendCaptureImg, this, &WirisProManagerWidget::captureImg);
+    
 
 }
 
@@ -219,10 +234,13 @@ void WirisProManagerWidget::handleEthChecked(int state){
         
         // make the qLabel visible
         _ui->stream_label->setVisible(true);
-        // Emit the signal to start the stream after 1 second to be sure the streaming is available
+        _ui->thermal_label->setVisible(true);
+        // Emit the signal to start the stream  1 second after the thread start running to be sure the streaming is available
+        //_visible_stream_thread->start();
         // wait for 1 second
         std::this_thread::sleep_for(std::chrono::seconds(1));
-        Q_EMIT sendStartStream();
+        Q_EMIT sendStartVisibleStream();
+        Q_EMIT sendStartThermalStream();
     }
     else{
         srv.request.enable = "FALSE";
@@ -238,7 +256,9 @@ void WirisProManagerWidget::handleEthChecked(int state){
         _ui->stream_label->setVisible(false);
         // TBD: Implement a way to destruct the thread when the checkbox is unchecked
         // Emit the signal to stop the stream
-        Q_EMIT sendStopStream();
+        //Q_EMIT sendStopStream();
+        //_visible_stream_thread->quit();
+        //_visible_stream_thread->wait();
 
     }
     
@@ -313,18 +333,70 @@ void WirisProManagerWidget::handleGimbalAngleControlReset(void){
 
 }
 void WirisProManagerWidget::gimbalAnglesCB(const geometry_msgs::Vector3Stamped::ConstPtr& msg){
-    // TBD: implement the service call to visualize the gimbal angles
+    // TBD: Modify it to be actually useful, it does not update the values once the callback is called
     
-    // Debugging: Manual display of the angles in the QLcdNumbers
+    // Debugging: Manual display and update of the angles in the QLcdNumbers
+    ROS_INFO("Angles received: %f, %f, %f", msg->vector.x, msg->vector.y, msg->vector.z);
     _ui->lcdNumber_pitch->display(msg->vector.x);
     _ui->lcdNumber_roll->display(msg->vector.y);
     _ui->lcdNumber_yaw->display(msg->vector.z);
 
-    
-
-
 }
 
+void WirisProManagerWidget::handleStreamModeChanged(int index){
+    // TBD: implement the service call to change the stream mode
+    // Debugging:
+    switch (index)
+    {
+    case 0:
+        ROS_INFO("Stream mode changed to VISIBLE");
+        _ui->stream_label->clear();
+        _ui->thermal_label->clear();
+        _ui->thermal_label->setVisible(false);
+        _ui->stream_label->setVisible(true);
+        
+
+        // if(_visible_stream_thread.get()->isRunning()){
+        //     ROS_INFO("Visible thread is already running ");
+
+        // }else{
+
+        //     if(_thermal_stream_thread.get()->isRunning()){
+        //         ROS_INFO("Thermal thread is running, STOPPING it and STARTING the VISIBLE thread");
+        //         //Q_EMIT sendStopStream();
+        //         _thermal_stream_thread->quit();
+        //         _thermal_stream_thread->wait();
+
+        //     ROS_WARN("Visible thread is not running, Starting it now");
+        //     _visible_stream_thread->start();
+
+        //     Q_EMIT sendStartVisibleStream();
+        // }
+        break;
+    case 1:
+        ROS_INFO("Stream mode changed to THERMAL");
+        _ui->stream_label->clear();
+        _ui->thermal_label->clear();
+        _ui->stream_label->setVisible(false);
+        _ui->thermal_label->setVisible(true);
+        // if(_thermal_stream_thread.get()->isRunning()){
+        //     ROS_INFO("Thermal thread is already running ");
+        // }else{
+        //     if(_visible_stream_thread.get()->isRunning()){
+        //         ROS_INFO("Visible thread is running, STOPPING it and STARTING the THERMAL thread");
+        //         //Q_EMIT sendStopStream();
+        //         _visible_stream_thread->quit();
+        //         _visible_stream_thread->wait();
+        //     ROS_WARN("Thermal thread is not running, Starting it now");
+        //     _thermal_stream_thread->start();
+
+        //     Q_EMIT sendStartThermalStream();
+        // }
+        // }
+        break;
+    
+    }   
+}
 
 // TBD: Implement temperature display
 }  // namespace wirispro_manager_panel

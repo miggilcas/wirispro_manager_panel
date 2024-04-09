@@ -15,6 +15,7 @@
 #include "geometry_msgs/Vector3Stamped.h"
 
 #include "visiblethread.h"
+#include "thermalthread.h"
 //#include "QCustomProgressBar.h"
 
 namespace Ui {
@@ -98,10 +99,14 @@ class WirisProManagerWidget : public QWidget
     void sendCapture(void);
 
     /**
-     * @brief Q_SIGNAL that starts the display of the stream
+     * @brief Q_SIGNAL that starts the display of the thermal stream
     */
-    void sendStartStream(void);
+    void sendStartVisibleStream(void);
 
+    /**
+     * @brief Q_SIGNAL that starts the display of the visible stream
+    */
+    void sendStartThermalStream(void);
     /**
      * @brief Q_SIGNAL that stops the display of the stream
     */
@@ -154,6 +159,12 @@ class WirisProManagerWidget : public QWidget
      *      QSlider.
     */
     void handleZoomSliderMoved(int value);
+
+    /**
+     * @brief Q_SLOT that handles actions for when
+     * the comboBox for the stream mode has been modified.
+    */
+    void handleStreamModeChanged(int index);
     
     /// GIMBAL CONTROL
 
@@ -203,6 +214,8 @@ class WirisProManagerWidget : public QWidget
     // Thread management
     std::unique_ptr<VisibleThread>         _visible_stream;
     std::unique_ptr<QThread>            _visible_stream_thread;
+    std::unique_ptr<ThermalThread>         _thermal_stream;
+    std::unique_ptr<QThread>            _thermal_stream_thread;
 
 };
 } // namespace wirispro_manager_panel
