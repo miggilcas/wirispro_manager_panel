@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>316</width>
+    <width>423</width>
     <height>1368</height>
    </rect>
   </property>
@@ -121,10 +121,24 @@ background-color: rgb(255, 242, 209);</string>
              </widget>
             </item>
             <item row="1" column="2">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_roll"/>
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_roll">
+              <property name="minimum">
+               <double>-180.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>180.000000000000000</double>
+              </property>
+             </widget>
             </item>
             <item row="2" column="2" rowspan="2">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_pitch"/>
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_pitch">
+              <property name="minimum">
+               <double>-180.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>180.000000000000000</double>
+              </property>
+             </widget>
             </item>
             <item row="5" column="2">
              <widget class="QDialogButtonBox" name="angles_buttonBox">
@@ -141,7 +155,14 @@ background-color: rgb(255, 242, 209);</string>
              </widget>
             </item>
             <item row="4" column="2">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_yaw"/>
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_yaw">
+              <property name="minimum">
+               <double>-180.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>180.000000000000000</double>
+              </property>
+             </widget>
             </item>
             <item row="1" column="1">
              <widget class="QLCDNumber" name="lcdNumber_roll"/>
