@@ -85,11 +85,81 @@ background-color: rgb(255, 242, 209);</string>
             <rect>
              <x>0</x>
              <y>60</y>
-             <width>318</width>
-             <height>269</height>
+             <width>320</width>
+             <height>261</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
+            <property name="horizontalSpacing">
+             <number>6</number>
+            </property>
+            <item row="2" column="2">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_pitch">
+              <property name="minimum">
+               <double>-180.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>180.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_roll">
+              <property name="minimum">
+               <double>-180.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>180.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>Yaw</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_yaw">
+              <property name="minimum">
+               <double>-180.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>180.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Roll</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Pitch</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLCDNumber" name="lcdNumber_roll"/>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLCDNumber" name="lcdNumber_pitch"/>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLCDNumber" name="lcdNumber_yaw"/>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Mode</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="2">
              <widget class="QComboBox" name="mode_comboBox">
               <property name="editable">
@@ -110,77 +180,10 @@ background-color: rgb(255, 242, 209);</string>
               </item>
              </widget>
             </item>
-            <item row="2" column="1">
-             <widget class="QLCDNumber" name="lcdNumber_pitch"/>
-            </item>
-            <item row="3" column="0" rowspan="2">
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Yaw</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_roll">
-              <property name="minimum">
-               <double>-180.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>180.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="2" rowspan="2">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_pitch">
-              <property name="minimum">
-               <double>-180.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>180.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="2">
+            <item row="4" column="2">
              <widget class="QDialogButtonBox" name="angles_buttonBox">
               <property name="standardButtons">
                <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Mode</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="2">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_yaw">
-              <property name="minimum">
-               <double>-180.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>180.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLCDNumber" name="lcdNumber_roll"/>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>Pitch</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1" rowspan="2">
-             <widget class="QLCDNumber" name="lcdNumber_yaw"/>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Roll</string>
               </property>
              </widget>
             </item>

@@ -57,8 +57,7 @@
 
 This package provides a custom RViz panel for managing the Workswell Wiris Pro camera in the context of SIMAR project. The panel allows users to make a simple use of the camera features, such as start/stop recording video, capture images, enable the ethernet video Stream, Zoom Adjustement, etc; using as a driver package in ROS as a backend. 
 
-<!--TBD: include a GIF of the whole thing working -->
-
+![Alt Text](docs/demo.gif)
 ## Features
 
 - **Video Start/Stop Controls:** Start Recording, Stop recording
@@ -112,7 +111,7 @@ Follow up the repository Setup instructions:
     cd .. && catkin_make
     ```
 
-1. Source the workspace and launch RViz:
+2. Source the workspace and launch RViz:
 
     ```bash
     source devel/setup.zsh && rviz
@@ -120,15 +119,19 @@ Follow up the repository Setup instructions:
     # just in case you don't know about zsh and you use bash :(
     source devel/setup.zsh && rviz
     ```
+3. Launch the wirispro driver implemented in [wirispro_manager](https://github.com/miggilcas/wirispro_manager) package:
 
-2. Add the custom panel to your RViz layout:
+    ```bash
+    roslaunch wirispro_manager wirispro_manager_tcp.launch
+
+    ```  
+
+4. Add the custom panel to your RViz layout:
 
     - Click on the "Panels" tab in RViz.
     - Select "Add New Panel" and choose it from the list.
 
-...
-
-Define more steps to follow
+5. Once we have everything opened, we can control just taking advantage of the panel, pushing buttons, inserting gimbal angles, choosing the streaming desired, etc.
 
 ## Help / Contribution
 
