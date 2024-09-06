@@ -104,8 +104,13 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget *parent)
   connectSignals(); // TBD: check if all the connections could be done inside
                     // the function
   // Make a connection to the finished signal of the visible thread
+  connect(_visible_stream.get(), &VisibleThread::finished,
+          _visible_stream_thread.get(), &QThread::quit);
+  connect(_visible_stream.get(), &VisibleThread::finished,
+          _visible_stream.get(), &VisibleThread::deleteLater);
   connect(_visible_stream_thread.get(), &QThread::finished,
-          _visible_stream.get(), &QObject::deleteLater, Qt::QueuedConnection);
+          _visible_stream_thread.get(), &QThread::deleteLater);
+
   // Connect the signals to the slot
   connect(this, &WirisProManagerWidget::sendStartVisibleStream,
           _visible_stream.get(), &VisibleThread::receiveStartStreaming);
