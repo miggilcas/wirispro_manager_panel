@@ -28,14 +28,19 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget *parent)
 
   // ros clients initialization, TBD: take a look into the relative/absolute
   // path of the service
-  _start_recording_client =
-      _nh.serviceClient<std_srvs::Trigger>("/recording_start");
-  _stop_recording_client =
-      _nh.serviceClient<std_srvs::Trigger>("/recording_stop");
-  _capture_client = _nh.serviceClient<std_srvs::Trigger>("/capture");
+  _start_recording_client = _nh.serviceClient<std_srvs::Trigger>(
+      "simar/visual_payload/recording_start");
+  _stop_recording_client = _nh.serviceClient<std_srvs::Trigger>(
+      "simar/visual_payload/recording_stop");
+  _capture_client =
+      _nh.serviceClient<std_srvs::Trigger>("simar/visual_payload/capture");
+  _zoom_in_client =
+      _nh.serviceClient<std_srvs::Trigger>("simar/visual_payload/zoom_in");
+  _zoom_out_client =
+      _nh.serviceClient<std_srvs::Trigger>("simar/visual_payload/zoom_out");
   _eth_stream_client =
       _nh.serviceClient<wirispro_manager::CameraEthStreamService>(
-          "/set_eth_stream");
+          "simar/visual_payload/set_eth_stream");
 
   // TBD: include gimbal subscribers or services
   _set_gimbal_goal_client =
@@ -134,14 +139,14 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget *parent)
           &WirisProManagerWidget::handleStopRClicked);
   connect(_ui->capture_button, &QPushButton::clicked, this,
           &WirisProManagerWidget::handleCaptureClicked);
+  connect(_ui->zoom_in_button, &QPushButton::clicked, this,
+          &WirisProManagerWidget::handleZoomInClicked);
+  connect(_ui->zoom_out_button, &QPushButton::clicked, this,
+          &WirisProManagerWidget::handleZoomOutClicked);
 
   // Checkbox connections from the ui generated file with Qt Designer
   connect(_ui->eth_checkBox, &QCheckBox::stateChanged, this,
           &WirisProManagerWidget::handleEthChecked);
-
-  // Slider connections from the ui generated file with Qt Designer
-  connect(_ui->zoom_slider, &QSlider::valueChanged, this,
-          &WirisProManagerWidget::handleZoomSliderMoved);
 
   // Combo box connections from the ui generated file with Qt Designer
   connect(_ui->mode_comboBox,
@@ -220,6 +225,38 @@ void WirisProManagerWidget::handleCaptureClicked(const bool checked) {
   }
 
   //
+}
+void WirisProManagerWidget::handleZoomInClicked(const bool checked) {
+  // TBD: implement the service call to capture image
+  // Q_EMIT sendZoomInImg();
+  std_srvs::Trigger srv;
+  // Debugging:
+  if (checked) {
+    ROS_INFO("ZoomIn  service called");
+  } else {
+    ROS_INFO("ZoomIn image WTF");
+    if (_zoom_in_client.call(srv)) {
+      ROS_INFO("ZoomIn service called");
+    } else {
+      ROS_ERROR("Failed to call Zoom in service");
+    }
+  }
+}
+void WirisProManagerWidget::handleZoomOutClicked(const bool checked) {
+  // TBD: implement the service call to capture image
+  // Q_EMIT sendZoomOutImg();
+  std_srvs::Trigger srv;
+  // Debugging:
+  if (checked) {
+    ROS_INFO("ZoomOut  service called");
+  } else {
+    ROS_INFO("ZoomOut image WTF");
+    if (_zoom_out_client.call(srv)) {
+      ROS_INFO("ZoomOut service called");
+    } else {
+      ROS_ERROR("Failed to call Zoom out service");
+    }
+  }
 }
 void WirisProManagerWidget::handleEthChecked(int state) {
   // Here we implement the service call to start/stop the eth stream
