@@ -29,18 +29,18 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget *parent)
   // ros clients initialization, TBD: take a look into the relative/absolute
   // path of the service
   _start_recording_client = _nh.serviceClient<std_srvs::Trigger>(
-      "simar/visual_payload/recording_start");
+      "/simar/visual_payload/recording_start");
   _stop_recording_client = _nh.serviceClient<std_srvs::Trigger>(
-      "simar/visual_payload/recording_stop");
+      "/simar/visual_payload/recording_stop");
   _capture_client =
-      _nh.serviceClient<std_srvs::Trigger>("simar/visual_payload/capture");
+      _nh.serviceClient<std_srvs::Trigger>("/simar/visual_payload/capture");
   _zoom_in_client =
-      _nh.serviceClient<std_srvs::Trigger>("simar/visual_payload/zoom_in");
+      _nh.serviceClient<std_srvs::Trigger>("/simar/visual_payload/zoom_in");
   _zoom_out_client =
-      _nh.serviceClient<std_srvs::Trigger>("simar/visual_payload/zoom_out");
+      _nh.serviceClient<std_srvs::Trigger>("/simar/visual_payload/zoom_out");
   _eth_stream_client =
       _nh.serviceClient<wirispro_manager::CameraEthStreamService>(
-          "simar/visual_payload/set_eth_stream");
+          "/simar/visual_payload/set_eth_stream");
 
   // TBD: include gimbal subscribers or services
   _set_gimbal_goal_client =
@@ -89,16 +89,16 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget *parent)
   // Visible Thread
   // remember that the constructor of the VisibleThread class is:
   // VisibleThread(bool* stream, const QString & ssrc, QLabel *label)
-  _visible_stream = std::make_unique<VisibleThread>(
-      new bool(true), "10.42.0.230", _ui->stream_label);
+  _visible_stream = std::make_unique<VisibleThread>(new bool(true), "10.1.2.36",
+                                                    _ui->stream_label);
   _visible_stream_thread = std::make_unique<QThread>(this);
 
   // Move the thread to the QThread
   _visible_stream->moveToThread(_visible_stream_thread.get());
 
   // Thermal Thread
-  _thermal_stream = std::make_unique<ThermalThread>(
-      new bool(true), "10.42.0.230", _ui->thermal_label);
+  _thermal_stream = std::make_unique<ThermalThread>(new bool(true), "10.1.2.36",
+                                                    _ui->thermal_label);
   _thermal_stream_thread = std::make_unique<QThread>(this);
 
   // Move the thread to the QThread
@@ -304,13 +304,13 @@ void WirisProManagerWidget::handleEthChecked(int state) {
     //_visible_stream_thread->wait();
   }
 }
-void WirisProManagerWidget::handleZoomSliderMoved(int value) {
-  // TBD: implement the service call to change the zoom level and map the value
-  // to the zoom level
+// void WirisProManagerWidget::handleZoomSliderMoved(int value) {
+//  TBD: implement the service call to change the zoom level and map the value
+//  to the zoom level
 
-  // Debugging:
-  ROS_INFO("Zoom level changed to %d", value);
-}
+// Debugging:
+// ROS_INFO("Zoom level changed to %d", value);
+//}
 
 void WirisProManagerWidget::handleGimbalModeChanged(int index) {
   // TBD: implement the service call to change the gimbal mode

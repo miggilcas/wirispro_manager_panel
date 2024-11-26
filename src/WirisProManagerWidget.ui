@@ -214,7 +214,7 @@ background-color: rgb(255, 242, 209);</string>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="zomm_in_button">
+         <widget class="QPushButton" name="zoom_in_button">
           <property name="text">
            <string>Zoom in</string>
           </property>
