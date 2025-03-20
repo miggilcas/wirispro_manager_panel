@@ -214,6 +214,7 @@ private:
   ros::ServiceClient _set_gimbal_goal_client;
   ros::ServiceClient _set_gimbal_mode_client;
   ros::Subscriber _gimbal_angles_sub;
+  ros::Publisher _gimbal_goals_pub;
   // Thread management
   std::unique_ptr<VisibleThread> _visible_stream;
   std::unique_ptr<QThread> _visible_stream_thread;

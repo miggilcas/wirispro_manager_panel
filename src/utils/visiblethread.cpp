@@ -50,10 +50,15 @@ void VisibleThread::run() {
   }
 
   cv::Mat frame;
+  bool process = true;
   while (*_stream) {
     if (!cap.read(frame) || frame.empty()) {
       ROS_ERROR("Empty frame or read error");
       break;
+    }
+    if (!process) {
+      process = true;
+      continue;
     }
 
     // Resize and convert color
@@ -73,6 +78,7 @@ void VisibleThread::run() {
                                 _label->setPixmap(QPixmap::fromImage(img));
                                 _label->resize(_label->pixmap()->size());
                               });
+    process = false;
   }
 
   cap.release();

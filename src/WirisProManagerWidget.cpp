@@ -29,26 +29,28 @@ WirisProManagerWidget::WirisProManagerWidget(QWidget *parent)
   // ros clients initialization, TBD: take a look into the relative/absolute
   // path of the service
   _start_recording_client = _nh.serviceClient<std_srvs::Trigger>(
-      "/simar/visual_payload/recording_start");
+      "/simar/visual/simar_wirispro_driver/recording_start");
   _stop_recording_client = _nh.serviceClient<std_srvs::Trigger>(
-      "/simar/visual_payload/recording_stop");
+      "/simar/visual/simar_wirispro_driver/recording_stop");
   _capture_client =
-      _nh.serviceClient<std_srvs::Trigger>("/simar/visual_payload/capture");
+      _nh.serviceClient<std_srvs::Trigger>("/simar/visual/simar_wirispro_driver/capture");
   _zoom_in_client =
-      _nh.serviceClient<std_srvs::Trigger>("/simar/visual_payload/zoom_in");
+      _nh.serviceClient<std_srvs::Trigger>("/simar/visual/simar_wirispro_driver/zoom_in");
   _zoom_out_client =
-      _nh.serviceClient<std_srvs::Trigger>("/simar/visual_payload/zoom_out");
+      _nh.serviceClient<std_srvs::Trigger>("/simar/visual/simar_wirispro_driver/zoom_out");
   _eth_stream_client =
       _nh.serviceClient<wirispro_manager::CameraEthStreamService>(
-          "/simar/visual_payload/set_eth_stream");
+          "/simar/visual/simar_wirispro_driver/set_eth_stream");
 
   // TBD: include gimbal subscribers or services
   _set_gimbal_goal_client =
-      _nh.serviceClient<gremsy_base::GimbalPos>("/ros_gremsy/goal");
+      _nh.serviceClient<gremsy_base::GimbalPos>("/simar/visual/ros_gremsy/goal");
   _set_gimbal_mode_client =
-      _nh.serviceClient<gremsy_base::GimbalMode>("/ros_gremsy/mode");
+      _nh.serviceClient<gremsy_base::GimbalMode>("/simar/visual/ros_gremsy/mode");
   _gimbal_angles_sub = _nh.subscribe(
-      "/ros_gremsy/angle", 1000, &WirisProManagerWidget::gimbalAnglesCB, this);
+      "/simar/visual/ros_gremsy/angle", 1000, &WirisProManagerWidget::gimbalAnglesCB, this);
+  _gimbal_goals_pub =
+      _nh.advertise<geometry_msgs::Vector3Stamped>("/simar/visual/ros_gremsy/goals", 10);
 
   // make the stream_label (QLabel) invisible
   _ui->stream_label->setVisible(false);
@@ -177,51 +179,63 @@ void WirisProManagerWidget::connectSignals(void) {
 void WirisProManagerWidget::handleStartClicked(const bool checked) {
   // TBD: implement the service call to start recording
   // Q_EMIT sendStartRecording();
-  std_srvs::Trigger srv;
   // Debugging:
   if (checked) {
     ROS_INFO("Start recording service called");
   } else {
     ROS_INFO("Start recording WTF");
+    std::thread([this]() {
+  std_srvs::Trigger srv;
     if (_start_recording_client.call(srv)) {
       ROS_INFO("Start recording service called");
     } else {
       ROS_ERROR("Failed to call start recording service");
     }
+    }).detach(); // Detach to run independently
+
   }
 }
 
 void WirisProManagerWidget::handleStopRClicked(const bool checked) {
   // TBD: implement the service call to stop recording
   // Q_EMIT sendStopRecording();
-  std_srvs::Trigger srv;
   // Debugging:
 
   if (checked) {
     ROS_INFO("Stop recording service called");
   } else {
     ROS_INFO("Stop recording WTF");
+        std::thread([this]() {
+  std_srvs::Trigger srv;
     if (_stop_recording_client.call(srv)) {
       ROS_INFO("Stop recording service called");
     } else {
       ROS_ERROR("Failed to call stop recording service");
     }
+    }).detach(); // Detach to run independently
   }
 }
 void WirisProManagerWidget::handleCaptureClicked(const bool checked) {
   // TBD: implement the service call to capture image
   // Q_EMIT sendCaptureImg();
-  std_srvs::Trigger srv;
   // Debugging:
   if (checked) {
     ROS_INFO("Capture image service called");
   } else {
     ROS_INFO("Capture image WTF");
-    if (_capture_client.call(srv)) {
+    /*if (_capture_client.call(srv)) {
       ROS_INFO("Capture image service called");
     } else {
       ROS_ERROR("Failed to call capture image service");
-    }
+    }*/
+    std::thread([this]() {
+      std_srvs::Trigger srv;
+      if (_capture_client.call(srv)) {
+        ROS_INFO("Capture image service called successfully");
+      } else {
+        ROS_ERROR("Failed to call capture image service");
+      }
+    }).detach(); // Detach to run independently
   }
 
   //
@@ -229,41 +243,47 @@ void WirisProManagerWidget::handleCaptureClicked(const bool checked) {
 void WirisProManagerWidget::handleZoomInClicked(const bool checked) {
   // TBD: implement the service call to capture image
   // Q_EMIT sendZoomInImg();
-  std_srvs::Trigger srv;
   // Debugging:
   if (checked) {
     ROS_INFO("ZoomIn  service called");
   } else {
     ROS_INFO("ZoomIn image WTF");
+        std::thread([this]() {
+  std_srvs::Trigger srv;
     if (_zoom_in_client.call(srv)) {
       ROS_INFO("ZoomIn service called");
     } else {
       ROS_ERROR("Failed to call Zoom in service");
     }
+    }).detach(); // Detach to run independently
   }
 }
 void WirisProManagerWidget::handleZoomOutClicked(const bool checked) {
   // TBD: implement the service call to capture image
   // Q_EMIT sendZoomOutImg();
-  std_srvs::Trigger srv;
   // Debugging:
   if (checked) {
     ROS_INFO("ZoomOut  service called");
   } else {
     ROS_INFO("ZoomOut image WTF");
+            std::thread([this]() {
+  std_srvs::Trigger srv;
     if (_zoom_out_client.call(srv)) {
       ROS_INFO("ZoomOut service called");
     } else {
       ROS_ERROR("Failed to call Zoom out service");
     }
+    }).detach(); // Detach to run independently
+
   }
 }
 void WirisProManagerWidget::handleEthChecked(int state) {
   // Here we implement the service call to start/stop the eth stream
 
-  wirispro_manager::CameraEthStreamService srv;
   // Debugging:
   if (state) {
+            std::thread([this]() {
+  wirispro_manager::CameraEthStreamService srv;
     // we need to access to the enable variable of the srv request, string type
     srv.request.enable = "TRUE";
 
@@ -274,6 +294,7 @@ void WirisProManagerWidget::handleEthChecked(int state) {
     } else {
       ROS_ERROR("Failed to call ETH stream service");
     }
+    }).detach(); // Detach to run independently
 
     // make the qLabel visible
     _ui->stream_label->setVisible(true);
@@ -286,6 +307,8 @@ void WirisProManagerWidget::handleEthChecked(int state) {
     Q_EMIT sendStartVisibleStream();
     Q_EMIT sendStartThermalStream();
   } else {
+            std::thread([this]() {
+  wirispro_manager::CameraEthStreamService srv;
     srv.request.enable = "FALSE";
 
     ROS_INFO("ETH stream unchecked");
@@ -295,6 +318,7 @@ void WirisProManagerWidget::handleEthChecked(int state) {
     } else {
       ROS_ERROR("Failed to call ETH stream service");
     }
+    }).detach(); // Detach to run independently
     // make the qLabel invisible
     _ui->stream_label->setVisible(false);
     // TBD: Implement a way to destruct the thread when the checkbox is
@@ -339,13 +363,14 @@ void WirisProManagerWidget::handleGimbalModeChanged(int index) {
 void WirisProManagerWidget::handleGimbalAngleControlApply(void) {
 
   gremsy_base::GimbalPos srv;
+
   // Debugging: print the apply button clicked
   ROS_INFO("Apply button clicked");
-  srv.request.pos.x = _ui->doubleSpinBox_pitch->value();
-  srv.request.pos.y = _ui->doubleSpinBox_roll->value();
+  srv.request.pos.x = _ui->doubleSpinBox_roll->value();
+  srv.request.pos.y = _ui->doubleSpinBox_pitch->value();
   srv.request.pos.z = _ui->doubleSpinBox_yaw->value();
   // Calling the service
-  if (_set_gimbal_goal_client.call(srv)) {
+  /*if (_set_gimbal_goal_client.call(srv)) {
     // Showing the values from the QDoubleSpinBoxes
     ROS_INFO(" Angles selected: %f, %f, %f", _ui->doubleSpinBox_roll->value(),
              _ui->doubleSpinBox_pitch->value(),
@@ -353,7 +378,13 @@ void WirisProManagerWidget::handleGimbalAngleControlApply(void) {
 
   } else {
     ROS_ERROR("Failed to call gimbal goal service");
-  }
+  }*/
+  geometry_msgs::Vector3Stamped gimbal_cmd;
+  gimbal_cmd.header.stamp = ros::Time::now();
+  gimbal_cmd.vector.x = _ui->doubleSpinBox_roll->value();
+  gimbal_cmd.vector.y = _ui->doubleSpinBox_pitch->value();
+  gimbal_cmd.vector.z = _ui->doubleSpinBox_yaw->value();
+  _gimbal_goals_pub.publish(gimbal_cmd);
 }
 void WirisProManagerWidget::handleGimbalAngleControlReset(void) {
   // TBD: implement the service call to reset the gimbal angles
@@ -371,10 +402,10 @@ void WirisProManagerWidget::gimbalAnglesCB(
   // the callback is called
 
   // Debugging: Manual display and update of the angles in the QLcdNumbers
-  ROS_INFO("Angles received: %f, %f, %f", msg->vector.x, msg->vector.y,
-           msg->vector.z);
-  _ui->lcdNumber_pitch->display(msg->vector.x);
-  _ui->lcdNumber_roll->display(msg->vector.y);
+  // ROS_INFO("Angles received: %f, %f, %f", msg->vector.x, msg->vector.y,
+  // msg->vector.z);
+  _ui->lcdNumber_roll->display(msg->vector.x);
+  _ui->lcdNumber_pitch->display(msg->vector.y);
   _ui->lcdNumber_yaw->display(msg->vector.z);
 }
 
